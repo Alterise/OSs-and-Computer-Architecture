@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "iostream": "cpp"
+    }
+    "powermode.enabled": false,
+    "powermode.presets": "magic",
+    "powermode.enableShake": false,
+    "powermode.backgroundMode": "mask",
+    "powermode.explosionSize": 10
+}
