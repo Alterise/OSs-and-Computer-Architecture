@@ -59,12 +59,10 @@ int main (int argc, char** argv)
     sembuf sopw3[1] = {{1, 1, 0}};
 
     int sem_desk;
-    if((sem_desk = semget(KEY, SEMSIZE, 0777)) == -1) {
-        if((sem_desk = semget(KEY, SEMSIZE, IPC_CREAT | IPC_EXCL | 0777)) == -1)
-        {
-            perror("Semget fail");
-            exit(4);
-        }
+    if((sem_desk = semget(KEY, SEMSIZE, IPC_CREAT | 0777)) == -1)
+    {
+        perror("Semget fail");
+        exit(4);
     }
 
     if (semop(sem_desk, sopS, 1) == -1) 
