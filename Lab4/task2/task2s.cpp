@@ -99,8 +99,8 @@ int main ()
             exit(30);
         }
         p_opd1 = (double*)shm_ptr;
-        p_opt = (char*)p_opd1 + sizeof(double);
-        p_opd2 = (double*)p_opt + sizeof(char);
+        p_opt = (char*)(p_opd1 + sizeof(double));
+        p_opd2 = (double*)(p_opt + sizeof(char));
 
         if(*p_opt == '+') *p_opd1 = *p_opd1 + *p_opd2;
         else if(*p_opt == '*') *p_opd1 = *p_opd1 * *p_opd2;

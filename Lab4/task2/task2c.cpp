@@ -101,8 +101,8 @@ int main ()
         exit(30);
     }
     p_opd1 = (double*)shm_ptr;
-    p_opt = (char*)p_opd1 + sizeof(double);
-    p_opd2 = (double*)p_opt + sizeof(char);
+    p_opt = (char*)(p_opd1 + sizeof(double));
+    p_opd2 = (double*)(p_opt + sizeof(char));
 
     *p_opd1 = stod(tmpd1); 
     *p_opt = tmpc[0];
@@ -144,6 +144,7 @@ int main ()
         exit(30);
     }
 
+    p_opd1 = (double*)shm_ptr;
     cout << *p_opd1 << endl;
 
     if(shmdt(p_opd1) == -1)
