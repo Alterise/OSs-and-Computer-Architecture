@@ -9,9 +9,7 @@
 using namespace std;
 
 #define SEMKEY 88
-#define SHMKEY1 95
-#define SHMKEY2 96
-#define SHMKEY3 97
+#define SHMKEY 97
 #define SEMSIZE 2
 
 union semun
@@ -38,71 +36,29 @@ int main ()
 
     shmid_ds sbuf;
     double *p_opd1, *p_opd2;
-    char *p_opt;
+    char *p_opt, *shm_ptr;
 
-    int shm_desk1, shm_desk2, shm_desk3;
+    int shm_desk;
 
-    if((shm_desk1 = shmget(SHMKEY1, sizeof(int), 0777)) != -1)
+    if((shm_desk = shmget(SHMKEY, (sizeof(double) * 2 + sizeof(char)), 0777)) != -1)
     {
-        if (shmctl(shm_desk1, IPC_RMID, &sbuf) == -1)
+        if (shmctl(shm_desk, IPC_RMID, &sbuf) == -1)
         {
             perror("Shmctl fail");
             exit(10);
         }
     }
 
-    if((shm_desk2 = shmget(SHMKEY2, sizeof(int), 0777)) != -1)
-    {
-        if (shmctl(shm_desk2, IPC_RMID, &sbuf) == -1)
-        {
-            perror("Shmctl fail");
-            exit(11);
-        }
-    }
-
-    if((shm_desk3 = shmget(SHMKEY3, sizeof(int), 0777)) != -1)
-    {
-        if (shmctl(shm_desk3, IPC_RMID, &sbuf) == -1)
-        {
-            perror("Shmctl fail");
-            exit(12);
-        }
-    }
-
-    if((shm_desk1 = shmget(SHMKEY1, sizeof(double), 0777 | IPC_CREAT)) == -1)
+    if((shm_desk = shmget(SHMKEY, (sizeof(double) * 2 + sizeof(char)), 0777 | IPC_CREAT)) == -1)
     {
         perror("Shmget fail");
         exit(20);
     }
 
-    if((shm_desk2 = shmget(SHMKEY2, sizeof(char), 0777 | IPC_CREAT)) == -1)
-    {
-        perror("Shmget fail");
-        exit(21);
-    }
-
-    if((shm_desk3 = shmget(SHMKEY3, sizeof(double), 0777 | IPC_CREAT)) == -1)
-    {
-        perror("Shmget fail");
-        exit(22);
-    }
-
-    if (shmctl(shm_desk1, SHM_LOCK, &sbuf) == -1)
+    if (shmctl(shm_desk, SHM_LOCK, &sbuf) == -1)
     {
         perror("Shmctl fail");
         exit(50);
-    }
-    
-    if (shmctl(shm_desk2, SHM_LOCK, &sbuf) == -1)
-    {
-        perror("Shmctl fail");
-        exit(51);
-    }
-
-    if (shmctl(shm_desk3, SHM_LOCK, &sbuf) == -1)
-    {
-        perror("Shmctl fail");
-        exit(52);
     }
 
     int sem_desk;
@@ -136,44 +92,25 @@ int main ()
             exit(5);
         }
 
-        p_opd1 = (double*)shmat(shm_desk1, 0, 0);
-        if(p_opd1 == ((double*)-1))
+        shm_ptr = (char*)shmat(shm_desk, 0, 0);
+        if(shm_ptr == ((char*)-1))
         {
             perror("Shmat fail");
             exit(30);
         }
-        p_opt = (char*)(shmat(shm_desk2, 0, 0));
-        if(p_opt == ((char*)-1))
-        {
-            perror("Shmat fail");
-            exit(31);
-        }
-        p_opd2 = (double*)(shmat(shm_desk3, 0, 0));
-        if(p_opd2 == ((double*)-1))
-        {
-            perror("Shmat fail");
-            exit(32);
-        }
+        p_opd1 = (double*)shm_ptr;
+        p_opt = (char*)p_opd1 + sizeof(double);
+        p_opd2 = (double*)p_opt + sizeof(char);
 
         if(*p_opt == '+') *p_opd1 = *p_opd1 + *p_opd2;
         else if(*p_opt == '*') *p_opd1 = *p_opd1 * *p_opd2;
         else if(*p_opt == '-') *p_opd1 = *p_opd1 - *p_opd2;
         else if(*p_opt == '/') *p_opd1 = *p_opd1 / *p_opd2;
 
-        if(shmdt((void*)p_opd1) == -1)
+        if(shmdt(shm_ptr) == -1)
         {
             perror("Shmdt fail(1)");
             exit(40);
-        }
-        if(shmdt((void*)p_opt) == -1)
-        {
-            perror("Shmdt fail(2)");
-            exit(41);
-        }
-        if(shmdt((void*)p_opd2) == -1)
-        {
-            perror("Shmdt fail(3)");
-            exit(42);
         }
 
         if (semop(sem_desk, sop2, 2) == -1) 
