@@ -15,12 +15,7 @@ int factor(int num)
 
 int main (int argc, char** argv)
 {   
-    if(argc == 1)
-    {
-        perror("No input\n");
-        exit(-1);
-    }
-    else if(argc > 6)
+    if(argc > 6)
     {        
         perror("Wrong input\n");
         exit(-2);
@@ -94,23 +89,32 @@ int main (int argc, char** argv)
         }
         else if(pid == 0)
         {
-            fntmp = "outfile.";
-            fntmp += to_string(getpid());
-            fntmp += ".txt";
-            if((ftmp = fopen(fntmp.c_str(), "w")))
+            if(out_in_file)
+            {
+                fntmp = filename;
+                fntmp += '.';
+                fntmp += to_string(getpid());
+                if((ftmp = fopen(fntmp.c_str(), "w")))
+                {
+                    int factorial = factor(abs(getpid() - getppid()));
+                    fprintf(ftmp, "Терексей Алешков Чебурекович\n");
+                    fprintf(ftmp, "%d\n", factorial);
+                    fclose(ftmp);
+                }
+            }
+            else
             {
                 int factorial = factor(abs(getpid() - getppid()));
-                fprintf(ftmp, "Терексей Алешков Чебурекович\n");
-                fprintf(ftmp, "%d\n", factorial);
-                fclose(ftmp);
+                printf("Терексей Алешков Чебурекович\n");
+                printf("%d\n", factorial);
             }
             return 0;
         }
         else
         {
-            fntmp = "outfile.";
+            fntmp = filename;
+            fntmp += '.';
             fntmp += to_string(pid);
-            fntmp += ".txt";
             files.push_back(fntmp);
         }
     }
