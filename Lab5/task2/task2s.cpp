@@ -11,6 +11,7 @@
 using namespace std;
 
 #define MSGKEY 44
+#define MSGTYPE 88
 const double Eps = 0.00000000001;
 
 typedef struct
@@ -56,12 +57,23 @@ int main ()
         exit(2);
     }
 
-    pid_t pid = getpid();
-    cfbuf coef_buffer = {1, -5, 3, 4};
-    rtbuf root_buffer;
-    vieta_method(&coef_buffer, &root_buffer);
-    cout << root_buffer.ans1 << " " << root_buffer.ans2 << " " << root_buffer.ans3 << endl;
+    mymsgbuf mbuf;
 
+    while(1)
+    {
+        if(msgrcv(msg_desc, &mbuf, sizeof(mbuf), MSGTYPE, MSG_NOERROR) > 0)
+        {
+            if(vieta_method(&mbuf.coef_buffer, &mbuf.root_buffer) < 0)
+            {
+                cout << "Wrong input from client: " << mbuf.request_id << endl;
+            }
+            else 
+            {
+                mbuf.mtype = mbuf.request_id;
+                msgsnd(msg_desc, &mbuf, sizeof(mbuf), 0);
+            }
+        }
+    }
 }
 
 double sgn(double x)
