@@ -15,12 +15,13 @@
 
 using namespace std;
 
-enum Cmds {Shoot, Miss, Hit, Quit};
+enum Cmds {Ready, Shoot, Miss, Hit, Quit};
 
 bool place_ship(int, int, int, int, int, int[10][10]);
 int x_crd_parser(string);
 int y_crd_parser(string);
 void swap(int*, int*);
+void show_battlefield(int[10][10], int[10][10]);
 
 int main() {
     int         h_sid;
@@ -29,8 +30,7 @@ int main() {
     Cmds        cmd_tmp;
     string      ship_bow_crd, ship_stern_crd; 
     int         battlefield[10][10];
-    // int         left_x, right_x;
-    // int         top_y,  bottom_y;
+    int         enemy_battlefield[10][10];
 
     //Filling the socket struct
     h_addr.sin_family = AF_INET;
@@ -56,7 +56,9 @@ int main() {
         }
     }
 
-    //Creating battlefield and placing ships
+    cout << "Both players are ready for the game." << endl2;
+
+    //Creating battlefields and placing ships
     for(int i = 0; i < 10; i++)
     {
         for(int j = 0; j < 10; j++)
@@ -64,7 +66,16 @@ int main() {
             battlefield[i][j] = 0;
         }
     }
+
+    for(int i = 0; i < 10; i++)
+    {
+        for(int j = 0; j < 10; j++)
+        {
+            enemy_battlefield[i][j] = 0;
+        }
+    }
     
+    show_battlefield(battlefield, enemy_battlefield);
     cout << "Place your ships (Example: A7 D10) [1st - ship bow coordinates, 2nd - ship stern coordinates]:" << endl;
 
     while(1)
@@ -72,10 +83,14 @@ int main() {
         cout << "Coordinates of your nuclear submarine (Size: 4): ";
         cin >> ship_bow_crd >> ship_stern_crd;
         if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 4, battlefield)) break;
-        else cout << endl << "Wrong input. Try again." << endl;
+        else 
+        {
+            show_battlefield(battlefield, enemy_battlefield);
+            cout << "You can't do that." << endl;
+        }
     }
-
-
+    show_battlefield(battlefield, enemy_battlefield);
+    cout << endl;
 
     for(int i = 1; i <= 2; i++)
     {
@@ -84,8 +99,14 @@ int main() {
             cout << "Coordinates of your cruiser №" << i << " (Size: 3): ";
             cin >> ship_bow_crd >> ship_stern_crd;
             if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 3, battlefield)) break;
-            else cout << endl << "Wrong input. Try again." << endl;
+            else 
+            {
+                show_battlefield(battlefield, enemy_battlefield);
+                cout << "You can't do that." << endl;
+            }
         }
+        show_battlefield(battlefield, enemy_battlefield);
+        cout << endl;
     }
 
     for(int i = 1; i <= 3; i++)
@@ -95,9 +116,16 @@ int main() {
             cout << "Coordinates of your destroyer №" << i << " (Size: 2): ";
             cin >> ship_bow_crd >> ship_stern_crd;
             if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 2, battlefield)) break;
-            else cout << endl << "Wrong input. Try again." << endl;
+            else 
+            {
+                show_battlefield(battlefield, enemy_battlefield);
+                cout << "You can't do that." << endl;
+            }
         }
+        show_battlefield(battlefield, enemy_battlefield);
+        cout << endl;
     }
+    
     
     for(int i = 1; i <= 4; i++)
     {
@@ -106,12 +134,19 @@ int main() {
             cout << "Coordinates of your torpedo boat №" << i << " (Size: 1): ";
             cin >> ship_bow_crd >> ship_stern_crd;
             if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 1, battlefield)) break;
-            else cout << endl << "Wrong input. Try again." << endl;
+            else 
+            {
+                show_battlefield(battlefield, enemy_battlefield);
+                cout << "You can't do that." << endl;
+            }
         }
+        show_battlefield(battlefield, enemy_battlefield);
+        cout << endl;
     }
+
+    cout << "Waiting for another player to be ready." << endl2;
     
     //Game
-
     while(recv(h_sid, &cmd_tmp, sizeof(cmd_tmp), 0) > 0)
     {
         if(cmd_tmp == Quit)
@@ -122,35 +157,37 @@ int main() {
         }
         else if(cmd_tmp == Shoot)
         {
-            cout << "Shoted" << endl2;
-            cmd_tmp = Quit;
-            send(h_sid, &cmd_tmp, sizeof(cmd_tmp), 0);
+            // cout << "Shoted" << endl2;
+            // cmd_tmp = Quit;
+            // send(h_sid, &cmd_tmp, sizeof(cmd_tmp), 0);
         }
     }
 
+    cout << "Ending the game.";
+    sleep(1);
     close(h_sid);
 }
 
+//Secondary functions
 bool place_ship(int xh, int yh, int xs, int ys, int size, int battlefield[10][10])
 {
-    if(xh - xs < 0) swap(&xh, &xs);
-    if(yh - ys < 0) swap(&yh, &ys);
+    if(xh - xs > 0) swap(&xh, &xs);
+    if(yh - ys > 0) swap(&yh, &ys);
 
-    if (xh >= 10 || xh < 0)                         return 0;
-    if (xs >= 10 || xs < 0)                         return 0;
-    if (yh >= 10 || yh < 0)                         return 0;
-    if (ys >= 10 || ys < 0)                         return 0;
-    if ( abs(xh - xs) && !abs(yh - ys))             return 0;
-    if (!abs(xh - xs) &&  abs(yh - ys))             return 0;
-    if ( abs(xh - xs) &&  abs(xh - xs) != size)     return 0;
-    if ( abs(yh - ys) &&  abs(yh - ys) != size)     return 0;
+    if (xh >= 10 || xh < 0)                               return 0;
+    if (xs >= 10 || xs < 0)                               return 0;
+    if (yh >= 10 || yh < 0)                               return 0;
+    if (ys >= 10 || ys < 0)                               return 0;
+    if (abs(xh - xs) && abs(yh - ys))                     return 0;
+    if ( abs(xh - xs) &&  (abs(xh - xs) + 1) != size)     return 0;
+    if ( abs(yh - ys) &&  (abs(yh - ys) + 1) != size)     return 0;
 
     pair<int, int> top_left_border      (xh == 0 ? xh : xh - 1, yh == 0 ? yh : yh - 1);
     pair<int, int> bottom_right_border  (xs == 9 ? xs : xs + 1, ys == 9 ? ys : ys + 1);
 
-    for (int i = top_left_border.first; i <= bottom_right_border.first; i++)
+    for (int i = top_left_border.second; i <= bottom_right_border.second; i++)
     {
-        for (int j = top_left_border.second; j <= bottom_right_border.second; j++)
+        for (int j = top_left_border.first; j <= bottom_right_border.first; j++)
         {
             if(battlefield[i][j] > 0) return 0;
         }
@@ -158,15 +195,15 @@ bool place_ship(int xh, int yh, int xs, int ys, int size, int battlefield[10][10
 
     if(abs(xh - xs))
     {
-        for(int i = xh; i <= xs; i++) battlefield[i][yh] = size;
+        for(int i = xh; i <= xs; i++) battlefield[yh][i] = size;
     }
     else if(abs(yh - ys))
     {
-        for(int i = yh; i <= ys; i++) battlefield[xh][i] = size;
+        for(int i = yh; i <= ys; i++) battlefield[i][xh] = size;
     }
     else
     {
-        battlefield[xh][yh] = size;
+        battlefield[yh][xh] = size;
     }
     return 1;
 }
@@ -203,4 +240,36 @@ void swap(int *a, int *b)
     tmp = *a;
     *a = *b;
     *b = tmp;
+}
+
+void show_battlefield(int battlefield[10][10], int enemy_battlefield[10][10])
+{
+    cout << endl2 << endl2 << endl2;
+    cout << "     My Battlefield                      Enemy Battlefield" << endl2;
+    cout << "   A B C D E F G H I J                  A B C D E F G H I J" << endl;
+    for(int i = 0; i < 10; i++)
+    {
+        if(i != 9) cout << " "; 
+        cout << i + 1 << " ";
+
+        for(int j = 0; j < 10; j++)
+        {
+            if(battlefield[i][j] == 0) cout << "~";
+            else if(battlefield[i][j] > 0) cout << "@";
+            if(j != 9) cout << " ";
+        }
+        cout << "               ";
+
+        if(i != 9) cout << " "; 
+        cout << i + 1 << " ";
+
+        for(int j = 0; j < 10; j++)
+        {
+            if(enemy_battlefield[i][j] == 0) cout << "~";
+            else if(enemy_battlefield[i][j] > 0) cout << "@";
+            if(j != 9) cout << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
 }
