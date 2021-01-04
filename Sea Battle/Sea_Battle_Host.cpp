@@ -146,7 +146,8 @@ int main() {
     {
         cout << "Coordinates of your nuclear submarine (Size: 4): ";
         cin >> ship_bow_crd >> ship_stern_crd;
-        if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 4, battlefield, ship_collection)) break;
+        if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 4, 
+        battlefield, ship_collection)) break;
         else 
         {
             show_battlefield(battlefield, enemy_battlefield);
@@ -162,7 +163,8 @@ int main() {
         {
             cout << "Coordinates of your cruiser №" << i << " (Size: 3): ";
             cin >> ship_bow_crd >> ship_stern_crd;
-            if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 3, battlefield, ship_collection)) break;
+            if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 
+            3, battlefield, ship_collection)) break;
             else 
             {
                 show_battlefield(battlefield, enemy_battlefield);
@@ -179,7 +181,8 @@ int main() {
         {
             cout << "Coordinates of your destroyer №" << i << " (Size: 2): ";
             cin >> ship_bow_crd >> ship_stern_crd;
-            if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 2, battlefield, ship_collection)) break;
+            if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 
+            2, battlefield, ship_collection)) break;
             else 
             {
                 show_battlefield(battlefield, enemy_battlefield);
@@ -197,7 +200,8 @@ int main() {
         {
             cout << "Coordinates of your torpedo boat №" << i << " (Size: 1): ";
             cin >> ship_bow_crd >> ship_stern_crd;
-            if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 1, battlefield, ship_collection)) break;
+            if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 
+            1, battlefield, ship_collection)) break;
             else 
             {
                 show_battlefield(battlefield, enemy_battlefield);
