@@ -57,8 +57,7 @@ int main() {
     string              crd_tmp; 
     int                 battlefield[10][10];
     int                 enemy_battlefield[10][10];
-    // int                 ship_count = 10;
-    int                 ship_count = 1;
+    int                 ship_count = 10;
     int                 x, y, xl, xr, yt, yb;
     vector<ship_info>   ship_collection;
 
@@ -93,13 +92,35 @@ int main() {
         exit(-3);
     }
 
-    cout << "First player is ready for game." << endl;
     cout << "Waiting for second player." << endl2;
 
-
     g_sid = accept(h_sid, (struct sockaddr*)&g_addr, &g_size);
-    cout << "Second player is connected." << endl;
-    cout << "Both players are ready for the game." << endl2;
+    cout << "Both players are connected." << endl2;
+    sleep(1);
+
+    //Checking connection
+    cout << "Checking connection with other player." << endl2;
+    sleep(1);
+
+    send(g_sid, &cmd_ready, sizeof(Cmds), 0);
+    if(!(recv(g_sid, &cmd_received, sizeof(Cmds), 0) > 0))
+    {
+        cout << "Socket messaging error(1)." << endl;
+        cout << "Try again." << endl;
+        sleep(3);
+        shutdown(h_sid, SHUT_RDWR);
+        close(h_sid);
+        exit(-1);
+    }
+    if(cmd_received != Ready) 
+    {
+        cout << "Socket messaging error(2)." << endl;
+        cout << "Try again." << endl;
+        sleep(3);
+        shutdown(h_sid, SHUT_RDWR);
+        close(h_sid);
+        exit(-2);
+    }
 
     //Creating battlefields and placing ships
     for(int i = 0; i < 10; i++)
@@ -135,77 +156,78 @@ int main() {
     show_battlefield(battlefield, enemy_battlefield);
     cout << endl;
 
-    // for(int i = 1; i <= 2; i++)
-    // {
-    //     while(1)
-    //     {
-    //         cout << "Coordinates of your cruiser №" << i << " (Size: 3): ";
-    //         cin >> ship_bow_crd >> ship_stern_crd;
-    //         if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 3, battlefield, ship_collection)) break;
-    //         else 
-    //         {
-    //             show_battlefield(battlefield, enemy_battlefield);
-    //             cout << "You can't do that." << endl;
-    //         }
-    //     }
-    //     show_battlefield(battlefield, enemy_battlefield);
-    //     cout << endl;
-    // }
+    for(int i = 1; i <= 2; i++)
+    {
+        while(1)
+        {
+            cout << "Coordinates of your cruiser №" << i << " (Size: 3): ";
+            cin >> ship_bow_crd >> ship_stern_crd;
+            if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 3, battlefield, ship_collection)) break;
+            else 
+            {
+                show_battlefield(battlefield, enemy_battlefield);
+                cout << "You can't do that." << endl;
+            }
+        }
+        show_battlefield(battlefield, enemy_battlefield);
+        cout << endl;
+    }
 
-    // for(int i = 1; i <= 3; i++)
-    // {
-    //     while(1)
-    //     {
-    //         cout << "Coordinates of your destroyer №" << i << " (Size: 2): ";
-    //         cin >> ship_bow_crd >> ship_stern_crd;
-    //         if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 2, battlefield, ship_collection)) break;
-    //         else 
-    //         {
-    //             show_battlefield(battlefield, enemy_battlefield);
-    //             cout << "You can't do that." << endl;
-    //         }
-    //     }
-    //     show_battlefield(battlefield, enemy_battlefield);
-    //     cout << endl;
-    // }
+    for(int i = 1; i <= 3; i++)
+    {
+        while(1)
+        {
+            cout << "Coordinates of your destroyer №" << i << " (Size: 2): ";
+            cin >> ship_bow_crd >> ship_stern_crd;
+            if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 2, battlefield, ship_collection)) break;
+            else 
+            {
+                show_battlefield(battlefield, enemy_battlefield);
+                cout << "You can't do that." << endl;
+            }
+        }
+        show_battlefield(battlefield, enemy_battlefield);
+        cout << endl;
+    }
     
     
-    // for(int i = 1; i <= 4; i++)
-    // {
-    //     while(1)
-    //     {
-    //         cout << "Coordinates of your torpedo boat №" << i << " (Size: 1): ";
-    //         cin >> ship_bow_crd >> ship_stern_crd;
-    //         if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 1, battlefield, ship_collection)) break;
-    //         else 
-    //         {
-    //             show_battlefield(battlefield, enemy_battlefield);
-    //             cout << "You can't do that." << endl;
-    //         }
-    //     }
-    //     show_battlefield(battlefield, enemy_battlefield);
-    //     cout << endl;
-    // }
+    for(int i = 1; i <= 4; i++)
+    {
+        while(1)
+        {
+            cout << "Coordinates of your torpedo boat №" << i << " (Size: 1): ";
+            cin >> ship_bow_crd >> ship_stern_crd;
+            if(place_ship(x_crd_parser(ship_bow_crd), y_crd_parser(ship_bow_crd), x_crd_parser(ship_stern_crd), y_crd_parser(ship_stern_crd), 1, battlefield, ship_collection)) break;
+            else 
+            {
+                show_battlefield(battlefield, enemy_battlefield);
+                cout << "You can't do that." << endl;
+            }
+        }
+        show_battlefield(battlefield, enemy_battlefield);
+        cout << endl;
+    }
 
+    //Checking willingness of players
     cout << "Waiting for another player to be ready." << endl2;
     sleep(2);
 
     send(g_sid, &cmd_ready, sizeof(Cmds), 0);
-    if(recv(g_sid, &cmd_received, sizeof(Cmds), 0) == 0)
+    if(!(recv(g_sid, &cmd_received, sizeof(Cmds), 0) > 0))
     {
-        cout << "Something went wrong." << endl;
+        cout << "Something went wrong(1)." << endl;
         sleep(3);
-        cout << "Ending the game.";
         shutdown(h_sid, SHUT_RDWR);
         close(h_sid);
+        exit(-1);
     }
     if(cmd_received != Ready) 
     {
-        cout << "Something went wrong." << endl;
+        cout << "Something went wrong(2)." << endl;
         sleep(3);
-        cout << "Ending the game.";
         shutdown(h_sid, SHUT_RDWR);
         close(h_sid);
+        exit(-2);
     }
 
     cout << "Starting the game." << endl2;
@@ -223,33 +245,33 @@ int main() {
                 ship_collection[battlefield[y][x] - 11].durability--;
                 if(ship_collection[battlefield[y][x] - 11].durability == 0)
                 {
-                    destroyed_ship_explosion(battlefield, ship_collection[battlefield[y][x] - 11].top_left_border.first, 
-                    ship_collection[battlefield[y][x] - 11].top_left_border.second, ship_collection[battlefield[y][x] - 11].bottom_right_border.first,
-                    ship_collection[battlefield[y][x] - 11].bottom_right_border.second);
+                    xl = ship_collection[battlefield[y][x] - 11].top_left_border.first;
+                    yt = ship_collection[battlefield[y][x] - 11].top_left_border.second;
+                    xr = ship_collection[battlefield[y][x] - 11].bottom_right_border.first;
+                    yb = ship_collection[battlefield[y][x] - 11].bottom_right_border.second;
+                    destroyed_ship_explosion(battlefield, xl, yt, xr, yb);
                     ship_count--;
                     show_battlefield(battlefield, enemy_battlefield);
                     cout << "Your opponent destroyed one of your ships." << endl2;
+                    send(g_sid, &cmd_destroyed, sizeof(Cmds), 0);
+                    send(g_sid, &x, sizeof(int), 0);
+                    send(g_sid, &y, sizeof(int), 0);
+                    send(g_sid, &xl, sizeof(int), 0);
+                    send(g_sid, &yt, sizeof(int), 0);
+                    send(g_sid, &xr, sizeof(int), 0);
+                    send(g_sid, &yb, sizeof(int), 0);
                     if(ship_count) 
                     {
-                        send(g_sid, &cmd_destroyed, sizeof(Cmds), 0);
-                        send(g_sid, &ship_collection[battlefield[y][x] - 11].top_left_border.first, sizeof(int), 0);
-                        send(g_sid, &ship_collection[battlefield[y][x] - 11].top_left_border.second, sizeof(int), 0);
-                        send(g_sid, &ship_collection[battlefield[y][x] - 11].bottom_right_border.first, sizeof(int), 0);
-                        send(g_sid, &ship_collection[battlefield[y][x] - 11].bottom_right_border.second, sizeof(int), 0);
                         send(g_sid, &cmd_pass, sizeof(Cmds), 0);
                         cout << "Waiting for your opponent to shoot" << endl2;
                     }
                     else 
                     {
-
+                        sleep(2);
                         cout << "~~~~~~~~~" << endl;
                         cout << "You lose." << endl;
                         cout << "~~~~~~~~~" << endl2;
                         send(g_sid, &cmd_win, sizeof(Cmds), 0);
-                        send(g_sid, &ship_collection[battlefield[y][x] - 11].top_left_border.first, sizeof(int), 0);
-                        send(g_sid, &ship_collection[battlefield[y][x] - 11].top_left_border.second, sizeof(int), 0);
-                        send(g_sid, &ship_collection[battlefield[y][x] - 11].bottom_right_border.first, sizeof(int), 0);
-                        send(g_sid, &ship_collection[battlefield[y][x] - 11].bottom_right_border.second, sizeof(int), 0);
                     }
                 }
                 else 
@@ -299,6 +321,9 @@ int main() {
         }
         else if(cmd_received == Destroyed)
         {
+            recv(g_sid, &x, sizeof(int), 0);
+            recv(g_sid, &y, sizeof(int), 0);
+            enemy_battlefield[y][x] = 2;
             recv(g_sid, &xl, sizeof(int), 0);
             recv(g_sid, &yt, sizeof(int), 0);
             recv(g_sid, &xr, sizeof(int), 0);
@@ -309,7 +334,6 @@ int main() {
         }
         else if(cmd_received == Pass)
         {
-            show_battlefield(battlefield, enemy_battlefield);
             cout << "Your turn to shoot" << endl2;
             while(1)
             {
@@ -333,12 +357,6 @@ int main() {
         }
         else if(cmd_received == Win)
         {
-            recv(g_sid, &xl, sizeof(int), 0);
-            recv(g_sid, &yt, sizeof(int), 0);
-            recv(g_sid, &xr, sizeof(int), 0);
-            recv(g_sid, &yb, sizeof(int), 0);
-            destroyed_ship_explosion(enemy_battlefield, xl, yt, xr, yb);
-            show_battlefield(battlefield, enemy_battlefield);
             cout << "~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
             cout << "You won! Congratulations!" << endl;
             cout << "~~~~~~~~~~~~~~~~~~~~~~~~~" << endl2;
@@ -348,7 +366,6 @@ int main() {
         {
             show_battlefield(battlefield, enemy_battlefield);
             cout << "You can't do that." << endl2;
-            sleep(2);
         }
         else if(cmd_received == Quit)
         {
